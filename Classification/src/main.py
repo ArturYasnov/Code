@@ -194,6 +194,5 @@ model.load_state_dict(torch.load(path.realpath(path.curdir)+'/models/model_26_04
 model.to(device)
 model.eval()
 
-# print( make_pred(model, '0936267933') )
 
 run(host='0.0.0.0', port=8080, reloader=True)
