@@ -65,11 +65,12 @@ from albumentations import (
 from albumentations.pytorch import ToTensorV2
 from albumentations import ImageOnlyTransform
 
-# from efficientnet_pytorch import EfficientNet
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection import FasterRCNN
+from torchvision.models.detection.rpn import AnchorGenerator
 
 from scipy.ndimage.interpolation import zoom
 
-# API
 from bottle import post, run, request, response, route
 import pandas as pd
 import joblib
@@ -85,6 +86,27 @@ warnings.filterwarnings("ignore")
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
+
+
+class Averager:
+    def __init__(self):
+        self.current_total = 0.0
+        self.iterations = 0.0
+
+    def send(self, value):
+        self.current_total += value
+        self.iterations += 1
+
+    @property
+    def value(self):
+        if self.iterations == 0:
+            return 0
+        else:
+            return 1.0 * self.current_total / self.iterations
+
+    def reset(self):
+        self.current_total = 0.0
+        self.iterations = 0.0
 
 
 def get_secret():
@@ -150,6 +172,20 @@ def collect_image(id):
         return 0
     
     
+def expand_bbox(x):
+    r = np.array(re.findall("([0-9]+[.]?[0-9]*)", x))
+    if len(r) == 0:
+        r = [-1, -1, -1, -1]
+    return r
+    
+    
+def get_valid_transform():
+    return A.Compose([
+        A.Resize(height=256, width=256, p=1.0),
+        ToTensorV2(p=1.0)
+    ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
+
+    
 @post('/predict/id')
 def predict_id():
     try:
@@ -174,5 +210,14 @@ t0.start()
 t = Thread(target=AdLifecycleFilter().main())
 t.daemon = True
 t.start()
+
+
+# load a model
+model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+# get number of inp features for the classifier
+in_features = model.roi_heads.box_predictor.cls_score.in_features
+# replace the pretr head with a new one
+model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes=2)
+model.to(device)
 
 #run(host='0.0.0.0', port=8080, use_reloader=False)
