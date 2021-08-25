@@ -260,12 +260,11 @@ net = get_net()
 run_training()
 
 net.eval()
-torch.save({'model_state_dict': net.model.state_dict()}, DIR_PATH+'/models/effdet_trained.pth')
 
-#torch.save({
-#    'model_state_dict': model.model.state_dict(),
-#    'optimizer_state_dict': optimizer.state_dict(),
-#    'scheduler_state_dict': scheduler.state_dict(),
-#    'best_summary_loss': best_summary_loss,
-#    'epoch': epoch,
-#    }, DIR_PATH+'/models/effdet_checpoint.bin')
+torch.save({
+    'model_state_dict': model.model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'scheduler_state_dict': scheduler.state_dict(),
+    'best_summary_loss': best_summary_loss,
+    'epoch': epoch,
+    }, DIR_PATH+'/models/effdet_checpoint.bin')
