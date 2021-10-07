@@ -16,6 +16,7 @@ from retinanet import model
 from retinanet.dataloader import collater, Resizer, Augmenter, Normalizer, UnNormalizer
 
 import seaborn as sns
+import matplotlib
 from matplotlib import pyplot as plt
 
 
@@ -54,6 +55,6 @@ for box in boxes:
                   (box[2], box[3]),
                   (0, 0, 120), 1)
 
-import matplotlib
+
 matplotlib.image.imsave(DIR_INPUT+"/sample.png", sample)
 
