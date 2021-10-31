@@ -1,7 +1,7 @@
 # Code
 
-Here are examples of my code. Some of them are my pet projects, some are from kaggle  
-competitions that I took part in.
+#Here are examples of my code. Some of them are my pet projects, some are from kaggle  
+#competitions that I took part in.
 
 [Seg] U-net Kidney Medical Dataset - my solution to HuBMAP image segmentation competition. Solution Identifying glomeruli in human kidney tissue images.
 
